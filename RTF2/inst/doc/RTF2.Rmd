@@ -1,0 +1,235 @@
+---
+title: "RTF2"
+author: ""
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{RTF2: Tables in rtf}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+R is one of the most popular data analysis software programs in the world. This means it is important that users have the ability to present their results and data cleanly. The RTF2 package provides a convenient method to produce tables in rtf format from data frames through the function rtf.table.out. For data that is more easily summarized using plots. RTF2 also provides rtf.plot.out to quickly create and save plots in rtf format. 
+
+
+
+## A Simple Table Example 
+
+To produce our rtf table the first thing needed is to attach the RTF2 package and the rtf package it builds on 
+```{r}
+library(RTF2)
+library(rtf)
+```
+     
+Now let's load and take a look at some data we want to put in a table
+```{r}
+data(dat.ex)
+dat.ex
+
+```
+
+We want to turn this into a nice clean rtf file which can be done with rtf.table.out
+We first want to define the information we want included in the headers and footers of the rtf file. 
+
+```{r}
+titles <- "Just for titles"
+footnotes <- "Just for footnotes"
+progLocation <- "Where the program is"
+dataLocation <- "Where the data is"
+outputLocation <- "Where the output is"
+```
+
+Next we need to define the place we are going to put the output. The rtf file will be saved to your working directory. 
+
+```{r}
+output <- file.path(getwd(), "RTF2_table_output.rtf")
+```
+
+
+
+Now we need to choose the formatting for the rtf file. In order to set up the rtf file, we must attach package 'rtf'.
+
+```{r}
+library(rtf)
+rtf <- RTF(output, width=11, height=8.5, omi=c(1, 1, 1, 1), font.size=8)
+```
+
+Finally we're ready to produce our rtf table
+```{r}
+rtf.table.out(rtf, tb=dat.ex,
+               cell1=2, cell2=1, nheader=1,
+               colFormat=c("R", rep("C", 11)), cw=c(1.8, rep(0.6, 11)), 
+               width=11, height=8.5,
+               varName=NULL, var.ul=NULL,
+               titles=titles, prd.status='',
+               footns=c(footnotes,                                                                                                                  
+                        paste("\nProgram Location:", progLocation, 
+                              "\nOutput Location:", outputLocation, 
+                              "\nData Location:", dataLocation)),
+               nline.body=25, addSpaceHeader=0, addSpaceFoot=0)
+done(rtf)
+```
+
+ 
+
+This creates the rtf format table. If you are wondering where your table is, check your working directory with `getwd()` to find out where it was saved. It should look like this. 
+
+![](Simple.rtf.table.png)
+
+
+##A Slightly More Complex Table Example
+
+Sometimes our data is a little deeper than a simple two-way table, and we may want to include additional column headings and subheadings in the table. This is where rtf.table.out really shines. Let's take a look at another data set. This is a larger data set so we'll just look at the dimensions then at the column names. 
+
+```{r}
+data(tb.ex)
+dim(tb.ex)
+colnames(tb.ex)
+```
+
+Notice they are all in the format of `; ID` or `Var Name Group; cell 0(%)`. This is because they include both the main column heading and the subheadings. It follows the format "heading; subheading". The `;  ` can be swapped out for another divider through the `header.split` argument in the function. 
+
+To produce our rtf table for this data we start with the same setup for the output. Still making certain that the rtf package is attached. 
+
+```{r}
+titles <- "Just for titles"
+footnotes <- "Just for footnotes"
+progLocation <- "Where the program is"
+dataLocation <- "Where the data is"
+outputLocation <- "Where the output is"
+
+output <- file.path(getwd(), "RTF2_table_output_2.rtf")
+library(rtf)
+rtf <- RTF(output, width=11, height=8.5, omi=c(1, 1, 1, 1), font.size=8)
+```
+
+
+
+Then we call the rtf.table.out function again. Notice the argument `nheader = 2`. This indicates that this table should have two levels of headings.  
+
+```{r}
+rtf.table.out(rtf, tb=tb.ex,
+               cell1=3, cell2=1, nheader=2,
+               colFormat=c(rep("L",2), rep("R", 2), rep("C", 6)), 
+               cw=c(0.8, 0.8, 0.8, 0.6, rep(0.8, 6)),  
+               width=11, height=8.5,
+               varName=NULL, var.ul="Var Name Group",
+               titles=titles, prd.status='',
+               footns=c(footnotes,                                                                                                                  
+                        paste("\nProgram Location:", progLocation, 
+                              "\nOutput Location:", outputLocation, 
+                              "\nData Location:", dataLocation)),
+               nline.body=30, addSpaceHeader=0, addSpaceFoot=0)
+done(rtf)
+```
+
+
+The table will be saved in your working directory and should look like this. 
+
+![](Complex.rtf.table.png)
+ 
+##The Table Header
+For the rtf.table.out function to operate appropriately it is important to have the header defined correctly. We do this by giving appropriate column names. 
+
+For a certain data set we want the header in the RTF file to look like this:
+![](desired.header.png)
+
+In the R matrix it should look like this:
+![](r.header.png)
+
+Let's take a look at the simulated data set to see what this would look like in R
+```{r}
+data(xyz)
+xyz
+```
+
+In order to get the column headings we desire we need to collapse the top three rows of the matrix into one with `'; '` separating each level. The following code can automate the process, but you could also do it manually. Be certain there is no leading or trailing white space around each variable.
+```{r}
+hd.var <- apply(xyz[1:3,], 2, function(x) paste0(x, '; ', collapse='')) 
+for (i in hd.var) cat(i, '\n', sep='')
+```
+
+We can now use these header names as column names for out matrix.
+```{r}
+colnames(xyz) <- hd.var
+xyz <- xyz[-(1:3), ]
+```
+
+We're now ready to generate the rtf output. Using just the default options we can still create quality results. Be certain that the 'rtf' package has been attached. 
+
+```{r}
+output <- file.path(getwd(), "RTF2_table_output_xyz.rtf")
+library(rtf)
+rtf <- RTF(output, width=11, height=8.5, omi=c(1, 1, 1, 1), font.size=10)
+  
+#undebug(rtf.table.out)
+rtf.table.out(rtf, tb=xyz,
+  titles='titles', prd.status='',
+  footns=c(footnotes = 'TEST footnotes',       
+    paste("\nProgram Location:", 'progLocation', 
+          "\nOutput Location:", 'outputLocation', 
+          "\nData Location:", 'dataLocation')),
+  nline.body=20, addSpaceHeader=0, addSpaceFoot=0) 
+done(rtf)
+```
+
+This creates the following nice rtf output 
+![](rtf.table.xyz.png)
+
+
+##A Simple Plot Example 
+
+The RTF2 package also provides functionality to create plots in rtf format. 
+
+We're going to take another look at the data.ex data this time trying to get a graphical summary. Suppose we are specifically wondering how miles per gallon varies for different numbers of cylinders. This can quickly be summarized with a plot. 
+
+First we want to define the plot as a function. 
+
+```{r}
+plot.out <- function() {
+     plot(dat.ex$mpg ~ factor(dat.ex$cyl))
+ }
+
+```
+
+
+Next we want to setup the headers and footers we want to include in our rtf output, where we want this output to be saved, and the format of the output, just as we did in the table examples. We also want to be certain that the 'rtf' package is attached, so we can create a rtf file. 
+
+
+```{r}
+titles <- "Just for titles"
+footnotes <- "Just for footnotes"
+progLocation <- "Where the program is"
+dataLocation <- "Where the data is"
+outputLocation <- "Where the output is"
+
+
+output <- file.path(getwd(), "RTF2_plot_output.rtf")
+library(rtf)
+rtf <- RTF(output, width=11, height=8.5, omi=c(1, 1, 1, 1), font.size=8)
+
+```
+
+
+We are now ready to produce our figure in rtf format, using the rtf.plot.out function. 
+```{r}
+rtf.plot.out(rtf, plotOut=plot.out, page.disp=FALSE,
+             height=8.5, width=11, omi.marg=c(1, 1, 1, 1),
+             width.plot=8, height.plot=4.5,
+             fs=8,
+             titles=titles,
+             footns=c(paste(footnotes, "\n\nProgram Location:", progLocation,
+                            "\nOutput Location:", outputLocation, 
+                            "\nData Location:", dataLocation)),
+             widthHeader=7, widthFoot=9, prd.status="")
+ done(rtf)
+
+```
+
+
+
+You now have a plot. Remember the plot was printed directly to rtf. You need to go to the working directory to find it. It should look like this
+
+![](rtf.plot.png)
+ 
+

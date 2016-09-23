@@ -1,0 +1,16 @@
+Package: RTF2
+Type: Package
+Title: Generate rtf quality tables and figures
+Version: 1.0
+Date: 2016-03-03
+Author: Michael Man, Duytrac Nguyen, Danni Yu, Michelle Carlsen
+Maintainer: Michael Man <mmz2001@gmail.com>
+Description: Generate rtf quality tables and figures including when data requires header with multiple levels. 
+License: GPL(>=2)
+Depends: R (>= 3.2.0),
+Imports: rtf
+Suggests: knitr, testthat
+VignetteBuilder: knitr
+LazyData: true
+NeedsCompilation: no
+Packaged: 2016-08-25 18:27:58 UTC; c230927
