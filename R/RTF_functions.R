@@ -211,7 +211,7 @@ if (TRUE) {
         rtf.add.row(rows=c(1:(st-1), 1:nline.body-1+st+nline.body*(i-1)))
 	if(!is.null(footns)){
           rtf$.rtf <- paste(rtf$.rtf, '{\\pard\\par}', ifelse(footer,'\\footer',''), tmp2, sep='')
-	}
+	}else{rtf$.rtf <- paste(rtf$.rtf, '{\\pard\\par}', sep='')}
       }
       
       #addPageBreak(rtf, width=width, height=height, omi=omi)
