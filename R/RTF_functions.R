@@ -177,16 +177,16 @@ if (TRUE) {
       }
       
       rtf <- rtf
-      fs <- rtf$.font.size
-      rtf$.rtf <- gsub('Times New Roman', font, rtf$.rtf)	# make "Courier New" as default
-      rtf$.rtf <- gsub('field{\\fldinst{page}}', '', rtf$.rtf, fixed=TRUE)	# delete page number
-      
+      fs <- rtf$.font.size      
           
       systems <- c(ifelse(page.disp==TRUE, paste('Page \\chpgn  of ', npage, sep=''), ""),
                    ifelse(time.disp==TRUE, format(Sys.time(), "%H:%M %d%b%Y"),""),
                    prd.status)
 
       if(!is.null(title)){
+        rtf$.rtf <- gsub('Times New Roman', font, rtf$.rtf)	# make "Courier New" as default
+        rtf$.rtf <- gsub('field{\\fldinst{page}}', '', rtf$.rtf, fixed=TRUE)	# delete page number
+
         hd.m <- c(paste(titles,  collapse='\\line '),
                 paste(systems, collapse='\\line '))  # main header
         tmp <- .add.table.row(
@@ -208,13 +208,13 @@ if (TRUE) {
           rtf$.rtf <- paste(rtf$.rtf, ifelse(i==1,'','\\page'), '{\\pard\\par}',
                           ifelse(header,'{\\header',''), tmp,
                           ifelse(header,'}',''), '{\\pard\\par}', sep='')
-	}else{rtf$.rtf <- paste(rtf$.rtf, ifelse(i==1,'','\\page'), '{\\pard\\par}', sep='')}
+	}
 	      
         rtf.add.row(rows=c(1:(st-1), 1:nline.body-1+st+nline.body*(i-1)))
 	      
 	if(!is.null(footns)){
           rtf$.rtf <- paste(rtf$.rtf, '{\\pard\\par}', ifelse(footer,'\\footer',''), tmp2, sep='')
-	}else{rtf$.rtf <- paste(rtf$.rtf, '{\\pard\\par}', sep='')}
+	}else{addNewLine(rtf)}
       }
       
       #addPageBreak(rtf, width=width, height=height, omi=omi)
