@@ -123,6 +123,7 @@ if (TRUE) {
 	  if(is.null(colFormat))
       colFormat <- c(rep("L", ncol(tb)))
       col.just <- matrix(c(rep(colFormat, nrow(ret2) + nheader)), ncol=ncol(ret2), byrow=TRUE)
+      HD.justM <- matrix(c(rep(HD.just, nrow(ret2) + nheader)), ncol=ncol(ret2), byrow=TRUE)
       
       dat <- ret2
       st <- attributes(dat)$'start cell'[1]
@@ -150,7 +151,7 @@ if (TRUE) {
                        .add.table.row(
                          col.data =     x[i,sel],
                          col.widths = cw2[i,sel],
-                         col.justify = HD.just[i,sel],
+                         col.justify = HD.justM[i,sel],
                          font.size = fs,
                          border.top = i %in% c(1),
                          border.bottom = underline.pos
