@@ -26,6 +26,7 @@ if (TRUE) {
     omi=c(1,1,1,1),
     cw=NULL,      #column width
     colFormat=NULL, #alignment (left, center, or right) for each column
+    HD.just=NULL,   #for header position adjustment
     varName=NULL,  #variable name that want to be repeated when go to the next page
     var.ul=NULL,     #key string in table defining the bottom line on each page.
     titles="", 
@@ -51,6 +52,7 @@ if (TRUE) {
     # page.disp: whether diplay page number
     
     #--- generate blank pape (break page) if the data is more than a page
+    if(is.null(HD.just)){HD.just <- rep('C', ncol(tb))}
     #--- check the class of tb
     if(is.vector(tb)){
       tb.nm <- names(tb)
@@ -142,14 +144,27 @@ if (TRUE) {
         ret <- "{\\pard\n"
         for (i in rows) if (i <= nrow(x)){
           sel <- which(cw2[i,]>0)
-          ret <- paste(ret,
+	  underline.pos<-if (i > st-2) i %in% c(st-1,nrow(x),max(rows)) else x[i,sel] %in% var.ul
+	  if(any(underline.pos)){
+		  ret <- paste(ret,
+                       .add.table.row(
+                         col.data =     x[i,sel],
+                         col.widths = cw2[i,sel],
+                         col.justify = HD.just[i,sel],
+                         font.size = fs,
+                         border.top = i %in% c(1),
+                         border.bottom = underline.pos
+                       ),
+                       sep='')
+	  } else {
+		  ret <- paste(ret,
                        .add.table.row(
                          col.data =     x[i,sel],
                          col.widths = cw2[i,sel],
                          col.justify = col.just[i,sel],
                          font.size = fs,
                          border.top = i %in% c(1),
-                         border.bottom = if (i > st-2) i %in% c(st-1,nrow(x),max(rows)) else x[i,sel] %in% var.ul
+                         border.bottom = underline.pos
                        ),
                        sep='')
           if (i < st) if (!all(cw2[i,] == cw2[i+1,])) ret <- paste(ret,'{\\pard\\par}','', sep='')
@@ -163,25 +178,27 @@ if (TRUE) {
       rtf$.rtf <- gsub('Times New Roman', font, rtf$.rtf)	# make "Courier New" as default
       rtf$.rtf <- gsub('field{\\fldinst{page}}', '', rtf$.rtf, fixed=TRUE)	# delete page number
       
-      #npage <- ceiling((nrow(x)-st+1)/nline.body)
-      
+          
       systems <- c(ifelse(page.disp==TRUE, paste('Page \\chpgn  of ', npage, sep=''), ""),
                    ifelse(time.disp==TRUE, format(Sys.time(), "%H:%M %d%b%Y"),""),
                    prd.status)
-      
-      hd.m <- c(paste(titles,  collapse='\\line '),
+
+      if(!is.null(title)){
+        hd.m <- c(paste(titles,  collapse='\\line '),
                 paste(systems, collapse='\\line '))  # main header
-      tmp <- .add.table.row(
-        col.data =  hd.m,
-        col.widths = c(sum(cw)-2+addSpaceHeader,2),
-        col.justify = c('L', 'R'),
-        font.size = fs)
-      tmp2 <- .add.table.row(
-        col.data =  paste(footns, collapse='\\line '),
-        col.widths = sum(cw)+addSpaceFoot,
-        col.justify = 'L',
-        font.size = fs)
-      }
+        tmp <- .add.table.row(
+          col.data =  hd.m,
+          col.widths = c(sum(cw)-2+addSpaceHeader,2),
+          col.justify = c('L', 'R'),
+          font.size = fs)
+       }
+      if(!is.null(footns)){
+        tmp2 <- .add.table.row(
+          col.data =  paste(footns, collapse='\\line '),
+          col.widths = sum(cw)+addSpaceFoot,
+          col.justify = 'L',
+          font.size = fs)
+      }}
 			
       for (i in 1:1){
         rtf$.rtf <- paste(rtf$.rtf, ifelse(i==1,'','\\page'), '{\\pard\\par}',
@@ -191,7 +208,7 @@ if (TRUE) {
         rtf$.rtf <- paste(rtf$.rtf, '{\\pard\\par}', ifelse(footer,'\\footer',''), tmp2, sep='')
       }
       
-      addPageBreak(rtf, width=width, height=height, omi=omi)
+      #addPageBreak(rtf, width=width, height=height, omi=omi)
     }
     if (Done) done(rtf) 
   }#end rtf.table.out
