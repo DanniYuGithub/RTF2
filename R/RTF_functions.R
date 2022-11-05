@@ -203,9 +203,11 @@ if (TRUE) {
       }}
 			
       for (i in 1:1){
-        rtf$.rtf <- paste(rtf$.rtf, ifelse(i==1,'','\\page'), '{\\pard\\par}',
+	if(!is.null(title)){
+          rtf$.rtf <- paste(rtf$.rtf, ifelse(i==1,'','\\page'), '{\\pard\\par}',
                           ifelse(header,'{\\header',''), tmp,
                           ifelse(header,'}',''), '{\\pard\\par}', sep='')
+	}
         rtf.add.row(rows=c(1:(st-1), 1:nline.body-1+st+nline.body*(i-1)))
 	if(!is.null(footns)){
           rtf$.rtf <- paste(rtf$.rtf, '{\\pard\\par}', ifelse(footer,'\\footer',''), tmp2, sep='')
