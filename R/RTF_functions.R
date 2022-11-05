@@ -124,6 +124,7 @@ if (TRUE) {
       colFormat <- c(rep("L", ncol(tb)))
       col.just <- matrix(c(rep(colFormat, nrow(ret2) + nheader)), ncol=ncol(ret2), byrow=TRUE)
       HD.justM <- matrix(c(rep(HD.just, nrow(ret2) + nheader)), ncol=ncol(ret2), byrow=TRUE)
+      if(cell1>2){HD.justM[-(1:(cell1-2)),] <- col.just[-(1:(cell1-2)),]}else{HD.justM<-col.just}
       
       dat <- ret2
       st <- attributes(dat)$'start cell'[1]
