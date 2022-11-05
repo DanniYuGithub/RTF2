@@ -144,7 +144,7 @@ if (TRUE) {
         ret <- "{\\pard\n"
         for (i in rows) if (i <= nrow(x)){
           sel <- which(cw2[i,]>0)
-	  underline.pos<-if (i > st-2) i %in% c(st-1,nrow(x),max(rows)) else x[i,sel] %in% var.ul
+	  underline.pos<-if (i > st-2){ i %in% c(st-1,nrow(x),max(rows)) }else{ x[i,sel] %in% var.ul}
 	  if(any(underline.pos)){
 		  ret <- paste(ret,
                        .add.table.row(
@@ -167,7 +167,8 @@ if (TRUE) {
                          border.bottom = underline.pos
                        ),
                        sep='')
-          if (i < st) if (!all(cw2[i,] == cw2[i+1,])) ret <- paste(ret,'{\\pard\\par}','', sep='')
+	  }
+          if (i < st) {if (!all(cw2[i,] == cw2[i+1,])) {ret <- paste(ret,'{\\pard\\par}','', sep='')}}
         }
         ret <- paste(ret, "}\n\n", sep = "")
         rtf$.rtf <- paste(rtf$.rtf, ret, sep='')
