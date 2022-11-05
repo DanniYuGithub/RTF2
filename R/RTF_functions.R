@@ -151,7 +151,7 @@ if (TRUE) {
                        .add.table.row(
                          col.data =     x[i,sel],
                          col.widths = cw2[i,sel],
-                         col.justify = HD.justM[i,sel],
+                         col.justify = HD.justM[i,sel], #for col header pos
                          font.size = fs,
                          border.top = i %in% c(1),
                          border.bottom = underline.pos
