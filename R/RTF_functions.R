@@ -141,7 +141,7 @@ if (TRUE) {
         if (is.vector(hd)) hd <- t(as.matrix(hd)) #prevent error for single level column heading                  
       dup <- t(apply(hd,1, function(x) c(FALSE, unlist(x[-1])==unlist(x[-length(x)]))))
       if (is.null(var.ul)) var.ul <- unique(hd[dup])[!grepl("^[[:space:]]*$",unique(hd[dup]))]
-			
+      x[gsub(" ", "", x)=='_']<-" " #used to add empty column		
       rtf.add.row <- function(rows=1:nrow(x)){
         ret <- "{\\pard\n"
         for (i in rows) if (i <= nrow(x)){
